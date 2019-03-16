@@ -16,9 +16,9 @@ This would create the docker container that you could pull from the DockerHub an
 The service would have 1 endpoint that:
 - Returns 200 OK with movie data in the JSON response
 - Returns 404 Not Found if not found
-- Uses in-momory database with auto-generated table "movie", if zero config is provided
+- Uses in-memory database with auto-generated table "movie", if zero config is provided
 - Issues a select statement against the existing "movie" table, if connection string is provided
-- Logs request/response/query
+- Logs request/response/query/timings
 - etc
 
 
