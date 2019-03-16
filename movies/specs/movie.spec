@@ -1,0 +1,5 @@
+long id key(identity)
+string title(required, min=2, max=255, unique)
+string description(required, max=1000)
+int duration(required)
+long genre_id(required)

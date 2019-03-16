@@ -32,11 +32,11 @@ http://addref.blogspot.com/2013/03/rest-checklist.html
 api.config
 
 ```
-- server.address:0.0.0.0
-- server.port:8080
-- api.root:api
-- api.paging.maxPageSize:100
-- api.allowOrigins=*
+server.address:0.0.0.0
+server.port:8080
+api.root:api
+api.paging.maxPageSize:100
+api.allowOrigins=*
 ```
 
 

@@ -1,0 +1,38 @@
+GET "movies/{id}" =>
+	from table movie
+	return by id:
+		id,
+		title,
+		description,
+		duration,
+		genre_id
+
+GET "movies{?paging}" =>
+	from table movie
+	return many with paging:
+		id,
+		title,
+		description,
+		duration
+		genre_id
+
+POST "movies" =>
+	from body
+	insert into table movie:
+		title,
+		description,
+		duration,
+		genre_id
+
+PUT "movies/{id}" =>
+	from body
+	update table movie by id:
+		id,
+		title,
+		description,
+		duration,
+		genre_id
+
+DELETE "movies/{id}" =>
+	from table movie
+	delete by id
