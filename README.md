@@ -21,6 +21,17 @@ The service would have 1 endpoint that:
 - Logs request/response/query/timings
 - etc
 
+Example response:
+
+```
+{
+	"id" : 123,
+	"title" : "Pulp Fiction"
+	"description" : "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales of violence and redemption."
+	"duration" : 154
+}
+```
+
 
 ## REST Guidelines
 
