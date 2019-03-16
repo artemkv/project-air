@@ -58,41 +58,6 @@ GET "movies/{id}" =>
 - Returns 404 Not Found if not found
 
 
-Using calculated properties (compiles the code inside the brackets using technology you choose):
-
-```
-using System;
-using Some.Code.Calculating.Rating;
-using Some.Logger;
-
-// Dependencies are injected
-IRatingCalculator _calculator;
-ILogger _logger;
-
-GET "movies/{id}" =>
-{
-	// Logic before request
-	_logger.Log(context.Request.Url);
-}
-	from table movie
-	return by id:
-		id,
-		title,
-		description => description.Substring(0, 100),
-		duration,
-		someConstant = 5,
-		rating = {_calculator.getRating(id)}
-{
-	// Logic after request
-	_logger.Log(context.TimeElapsed);
-}
-```
-
-- Fields with lambda allow extra processing on database fields
-- Fiels returned with "field =" syntax are not mapped to db and always calculated
-- Implicit "context" variable is always defined that contains some extra info
-
-
 ### Collections
 
 ```
@@ -140,6 +105,21 @@ GET "movies{?paging}&{?sorting}&{?filter}" =>
 		title,
 		description,
 		duration
+```
+
+```
+GET "movies{?paging}&{?sorting}&{?filter}" =>
+	allow sorting on: id, title, duration
+	allow filter on: exact(title), contains(description), lessThan(duration)
+
+	from table movie
+	return many with paging, sorting, filter:
+		id,
+		title,
+		description,
+		duration
+	where
+		deleted = false
 ```
 		
 - Returns 200 OK with JSON response
@@ -189,7 +169,7 @@ DELETE "movies/{id}" =>
 - Returns 404 Not Found if not found
 
 
-### Spec
+## Spec
 
 movie.spec
 
@@ -202,3 +182,39 @@ date createdDate(required, oninsert)
 date modifiedDate(required, onupdate)
 ```
 
+
+## Extra logic
+
+### Calculated properties
+
+```
+using System;
+using Some.Code.Calculating.Rating;
+using Some.Logger;
+
+// Dependencies are injected
+IRatingCalculator _calculator;
+ILogger _logger;
+
+GET "movies/{id}" =>
+{
+	// Logic before request
+	_logger.Log(context.Request.Url);
+}
+	from table movie
+	return by id:
+		id,
+		title,
+		description => description.Substring(0, 100),
+		duration,
+		someConstant = 5,
+		rating = {_calculator.getRating(id)}
+{
+	// Logic after request
+	_logger.Log(context.TimeElapsed);
+}
+```
+
+- Fields with lambda allow extra processing on database fields
+- Fiels returned with "field =" syntax are not mapped to db and always calculated
+- Implicit "context" variable is always defined that contains some extra info
