@@ -60,6 +60,8 @@ GET "movies/{id}" =>
 
 ### Collections
 
+Paging:
+
 ```
 GET "movies{?paging}" =>
 	from table movie
@@ -69,6 +71,8 @@ GET "movies{?paging}" =>
 		description,
 		duration
 ```
+
+Paging + filter:
 		
 ```
 GET "movies{?paging}&{?filter}" =>
@@ -82,6 +86,8 @@ GET "movies{?paging}&{?filter}" =>
 		duration
 ```
 
+Paging + sorting:
+
 ```
 GET "movies{?paging}&{?sorting}" =>
 	allow sorting on: id, title, duration
@@ -93,6 +99,8 @@ GET "movies{?paging}&{?sorting}" =>
 		description,
 		duration
 ```
+
+Paging + sorting + filter:
 
 ```
 GET "movies{?paging}&{?sorting}&{?filter}" =>
@@ -106,6 +114,8 @@ GET "movies{?paging}&{?sorting}&{?filter}" =>
 		description,
 		duration
 ```
+
+Extra filter not coming from request:
 
 ```
 GET "movies{?paging}&{?sorting}&{?filter}" =>
@@ -128,12 +138,14 @@ GET "movies{?paging}&{?sorting}&{?filter}" =>
 
 ## POST
 
+```
 POST "movies" =>
 	from body
 	insert into table movie:
 		title,
 		description,
 		duration(min=1, max=600)
+```
 		
 - Takes in JSON object with properties title, description, duration
 - Validates the input based on spec (see below) or directly (like with duration)
@@ -143,6 +155,7 @@ POST "movies" =>
 
 ## PUT
 
+```
 PUT "movies/{id}" =>
 	from body
 	update table movie by id:
@@ -150,6 +163,7 @@ PUT "movies/{id}" =>
 		title,
 		description,
 		duration(min=1, max=600)
+```
 		
 - Takes in JSON object with properties id, title, description, duration
 - Checks that id in route matches the one in the body
@@ -161,9 +175,11 @@ PUT "movies/{id}" =>
 
 ## DELETE
 
+```
 DELETE "movies/{id}" =>
 	from table movie
 	delete by id
+```
 
 - Returns 204 No Content when successful
 - Returns 404 Not Found if not found
