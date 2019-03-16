@@ -222,7 +222,7 @@ GET "movies/{id}" =>
 ```
 GET "movies{?paging}&{?sorting}&{?filter}" =>
 	allow sorting on: movie.title, actor.lastName, character.lastName
-	allow filter on: exact(movie.title), contains(movie.actor.lastName), contains(description), lessThan(duration)
+	allow filter on: exact(movie.title), contains(movie.actor.lastName)
 
 	from table movie
 		left join character on movie.id == character.movie_id
