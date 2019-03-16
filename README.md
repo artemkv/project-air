@@ -1,6 +1,6 @@
 # REST Service Language Spec
 
-Just imagine you could write 7 lines of code to get a *complete production-ready RESTful service* that you could immediately deploy in the cloud:
+Just imagine you could write 7 lines of code to get a **complete production-ready RESTful service** that you could immediately deploy in the cloud:
 
 ```
 GET "movies/{id}" =>
