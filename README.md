@@ -1,4 +1,4 @@
-# REST Service language spec
+# REST Service Language Spec
 
 Just imagine you could write 7 lines of code like this to get a complete service that you could immediately deploy in the cloud:
 
@@ -12,13 +12,14 @@ GET "movies/{id}" =>
 		duration
 ```
 
-This would create the docker container that you could pull from the Docker Hub and push into production.
+This would create the docker container that you could pull from the DockerHub and push into production.
 The service would have 1 endpoint that:
 - Returns 200 OK with movie data in the JSON response
 - Returns 404 Not Found if not found
 - Uses in-momory database with auto-generated table "movie", if zero config is provided
 - Issues a select statement against the existing "movie" table, if connection string is provided
 - Logs request/response/query
+- etc
 
 
 ## REST Guidelines
@@ -26,7 +27,7 @@ The service would have 1 endpoint that:
 http://addref.blogspot.com/2013/03/rest-checklist.html
 
 
-## Configuration:
+## Optional Configuration
 
 api.config
 
@@ -53,8 +54,43 @@ GET "movies/{id}" =>
 		duration
 ```
 		
-- Returns 200 OK with json response
+- Returns 200 OK with JSON response
 - Returns 404 Not Found if not found
+
+
+Using calculated properties (compiles the code inside the brackets using technology you choose):
+
+```
+using System;
+using Some.Code.Calculating.Rating;
+using Some.Logger;
+
+// Dependencies are injected
+IRatingCalculator _calculator;
+ILogger _logger;
+
+GET "movies/{id}" =>
+{
+	// Logic before request
+	_logger.Log(context.Request.Url);
+}
+	from table movie
+	return by id:
+		id,
+		title,
+		description => description.Substring(0, 100),
+		duration,
+		someConstant = 5,
+		rating = {_calculator.getRating(id)}
+{
+	// Logic after request
+	_logger.Log(context.TimeElapsed);
+}
+```
+
+- Fields with lambda allow extra processing on database fields
+- Fiels returned with "field =" syntax are not mapped to db and always calculated
+- Implicit "context" variable is always defined that contains some extra info
 
 
 ### Collections
@@ -106,7 +142,7 @@ GET "movies{?paging}&{?sorting}&{?filter}" =>
 		duration
 ```
 		
-- Returns 200 OK with json response
+- Returns 200 OK with JSON response
 - Returns 400 Bad Request if pagination request is invalid
 
 
