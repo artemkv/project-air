@@ -199,9 +199,61 @@ date modifiedDate(required, onupdate)
 ```
 
 
-## Extra logic
+## Extra Logic
 
-### Calculated properties
+### GET with inline spec
+
+```
+GET "movies/{id}" =>
+	from table movie
+	return by id:
+		int id,
+		string title,
+		string description,
+		int duration
+```
+
+- Normally not needed, should pick up types either from existing database or spec
+- Allows to generate table fields with correct datatype in absence of spec or existing database
+
+
+### GET from join query
+
+```
+GET "movies{?paging}&{?sorting}&{?filter}" =>
+	allow sorting on: movie.title, actor.lastName, character.lastName
+	allow filter on: exact(movie.title), contains(movie.actor.lastName), contains(description), lessThan(duration)
+
+	from table movie
+		left join character on movie.id == character.movie_id
+		left join actor on actor.id == character.actor_id
+	return many with paging, sorting, filter:
+		movie.id,
+		movie.title,
+		movie.description,
+		movie.duration
+		movie.actor[]
+			actor.id
+			actor.firstName
+			actor.lastName
+			actor.character
+				character.id
+				character.firstName
+				character.lastName
+		movie.character[]
+			character.id
+			character.firstName
+			character.lastName
+			character.actor
+				actor.id
+				actor.firstName
+				actor.lastName
+	where
+		deleted = false
+```
+
+
+### GET with calculated properties and additional logic
 
 ```
 using System;
@@ -213,10 +265,8 @@ IRatingCalculator _calculator;
 ILogger _logger;
 
 GET "movies/{id}" =>
-{
-	// Logic before request
 	_logger.Log(context.Request.Url);
-}
+
 	from table movie
 	return by id:
 		id,
@@ -224,13 +274,63 @@ GET "movies/{id}" =>
 		description => description.Substring(0, 100),
 		duration,
 		someConstant = 5,
-		rating = {_calculator.getRating(id)}
-{
-	// Logic after request
+		rating = _calculator.getRating(id)
+
 	_logger.Log(context.TimeElapsed);
-}
 ```
 
 - Fields with lambda allow extra processing on database fields
 - Fiels returned with "field =" syntax are not mapped to db and always calculated
 - Implicit "context" variable is always defined that contains some extra info
+
+
+### POST with additional logic and extra processing on input data
+
+```
+using System;
+
+POST "movies" =>
+	_logger.Log(context.Request.Url);
+
+	from body
+	insert into table movie:
+		title => title.Trim(),
+		description => description ?? "",
+		duration(min=1, max=600),
+		createdDate => DateTime.UtcNow
+		
+	_logger.Log(context.TimeElapsed);
+```
+
+
+### POST with related entity
+
+```
+using System;
+
+POST "movies" =>
+	from body
+	insert into table movie:
+		title,
+		description,
+		duration,
+		genre_id(required)
+```
+
+
+## PUT with additional logic and extra processing on input data
+
+```
+PUT "movies/{id}" =>
+	_logger.Log(context.Request.Url);
+
+	from body
+	update table movie by id:
+		id,
+		title,
+		description,
+		duration(min=1, max=600),
+		modifiedDate => DateTime.UtcNow
+
+	_logger.Log(context.TimeElapsed);
+```
