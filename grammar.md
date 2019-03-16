@@ -1,3 +1,4 @@
+```
 token:=<comment>|<endpoint>
 
 comment:=//<text>
@@ -31,3 +32,4 @@ options:=paging|sorting|filter
 
 columns:=
 	<column>[,<columns>]
+```
