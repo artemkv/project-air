@@ -21,15 +21,25 @@ The service would have 1 endpoint that:
 - Logs request/response/query
 
 
+## REST Guidelines
+
+http://addref.blogspot.com/2013/03/rest-checklist.html
+
+
 ## Configuration:
 
-- hostname "localhost"
-- port "8080"
-- api root "/api/"
-- max page size
+api.config
+
+```
+- server.address:0.0.0.0
+- server.port:8080
+- api.root:api
+- api.paging.maxPageSize:100
+- api.allowOrigins=*
+```
 
 
-## GET APIs
+## GET
 
 ### Single object
 
@@ -45,6 +55,7 @@ GET "movies/{id}" =>
 		
 - Returns 200 OK with json response
 - Returns 404 Not Found if not found
+
 
 ### Collections
 
@@ -97,4 +108,61 @@ GET "movies{?paging}&{?sorting}&{?filter}" =>
 		
 - Returns 200 OK with json response
 - Returns 400 Bad Request if pagination request is invalid
+
+
+## POST
+
+POST "movies" =>
+	from body
+	insert into table movie:
+		title,
+		description,
+		duration(min=1, max=600)
+		
+- Takes in JSON object with properties title, description, duration
+- Validates the input based on spec (see below) or directly (like with duration)
+- Inserts into table "movie", with id generated
+- Returns 201 Created with movie object in response body and URL in Location header
+
+
+## PUT
+
+PUT "movies/{id}" =>
+	from body
+	update table movie by id:
+		id,
+		title,
+		description,
+		duration(min=1, max=600)
+		
+- Takes in JSON object with properties id, title, description, duration
+- Checks that id in route matches the one in the body
+- Validates the input based on spec (see below) or directly (like with duration)
+- Updates table "movie", matching record by id
+- Returns 204 No Content when successful
+- Returns 404 Not Found if not found
+
+
+## DELETE
+
+DELETE "movies/{id}" =>
+	from table movie
+	delete by id
+
+- Returns 204 No Content when successful
+- Returns 404 Not Found if not found
+
+
+### Spec
+
+movie.spec
+
+```
+int id key(identity)
+string title(required, min=2, max=255, unique)
+string description(required, max=1000)
+int duration(required)
+date createdDate(required, oninsert)
+date modifiedDate(required, onupdate)
+```
 
